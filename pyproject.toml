@@ -1,0 +1,58 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "telediff"
+dynamic = ["version"]
+description = ''
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Artiom Mocrenco", email = "artiom.mocrenco@gmail.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+
+]
+
+[tool.hatch.version]
+path = "src/telediff/__about__.py"
+
+[project.scripts]
+telediff = "telediff.__main__:main"
+
+[tool.coverage.run]
+source_pkgs = ["telediff", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/telediff/__about__.py",
+]
+
+[tool.coverage.paths]
+telediff = ["src/telediff", "*/telediff/src/telediff"]
+tests = ["tests", "*/telediff/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
+
+[tool.pytest.ini_options]
+pythonpath = [
+  ".", "src"
+]
+
+[tool.hatch.envs.hatch-test.scripts]
+run = "pytest{env:HATCH_TEST_ARGS:} {args}"
+run-cov = "coverage run -m pytest{env:HATCH_TEST_ARGS:} {args}"
+cov-combine = "coverage combine"
+cov-report = "coverage html"
