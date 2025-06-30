@@ -16,6 +16,15 @@ pipx install telediff
 uv tool install telediff
 ```
 
+## With docker
+
+```sh
+docker run --rm \
+  -v "$HOME/.config/telediff:/root/.config/telediff" \
+  -v "$HOME/.cache/telediff:/root/.cache/telediff" \
+  ghcr.io/hacktegic/telediff:latest telediff --help
+```
+
 ## Configuration
 
 Run `telediff create-config` to create the default config and print its path.
