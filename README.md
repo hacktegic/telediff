@@ -16,7 +16,7 @@ pipx install telediff
 uv tool install telediff
 ```
 
-## With docker
+### With docker
 
 ```sh
 docker run --rm \
