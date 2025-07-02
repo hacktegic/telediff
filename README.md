@@ -77,9 +77,13 @@ options:
 
 ```
 telediff notify --help
-usage: telediff notify [-h] --channel CHANNEL [--title TITLE] [--body BODY] [--body-prepend BODY_PREPEND] [--body-append BODY_APPEND]
-                       [--title-prepend TITLE_PREPEND] [--title-append TITLE_APPEND] --file FILE [--max-length MAX_LENGTH] [--no-path-in-body]
-                       [--no-color]
+usage: telediff notify [-h] --channel CHANNEL [--title TITLE] [--body BODY]
+                       [--body-prepend BODY_PREPEND]
+                       [--body-append BODY_APPEND]
+                       [--title-prepend TITLE_PREPEND]
+                       [--title-append TITLE_APPEND] --file FILE
+                       [--max-length MAX_LENGTH] [--no-path-in-body]
+                       [--no-color] [--attach]
 
 options:
   -h, --help            show this help message and exit
@@ -88,20 +92,29 @@ options:
   --title, -t TITLE     Title for notification (default: 'telediff update')
   --body, -b BODY       Body for notification (default: file contents or diff)
   --body-prepend BODY_PREPEND
-                        Text to prepend to the notification body (default: empty)
+                        Text to prepend to the notification body (default:
+                        empty)
   --body-append BODY_APPEND
-                        Text to append to the notification body (default: empty)
+                        Text to append to the notification body (default:
+                        empty)
   --title-prepend TITLE_PREPEND
-                        Text to prepend to the notification title (default: empty)
+                        Text to prepend to the notification title (default:
+                        empty)
   --title-append TITLE_APPEND
-                        Text to append to the notification title (default: empty)
-  --file, -f FILE       Path to the file to monitor for changes. If the file does not exist, contents of STDIN are taken and written to this
-                        path. If STDIN is provided, it always replaces the file contents. Notification is sent if the file (or STDIN) changes
-                        compared to the cached copy.
+                        Text to append to the notification title (default:
+                        empty)
+  --file, -f FILE       Path to the file to monitor for changes. If the file
+                        does not exist, contents of STDIN are taken and
+                        written to this path. If STDIN is provided, it always
+                        replaces the file contents. Notification is sent if
+                        the file (or STDIN) changes compared to the cached
+                        copy.
   --max-length MAX_LENGTH
-                        Max message length (default: 1600, 0=unlimited)
+                        Max body length (default: 0=channel-specific limit)
   --no-path-in-body     Do not include the file path in the notification body
   --no-color            Disable colored and emoji output for this notification
+  --attach              Attach the diff as a file if supported by the channel
+                        (text files only)
 ```
 
 ### telediff test
