@@ -240,7 +240,7 @@ def cmd_notify(args):
             colorize(
                 emoji("fail", Color.YELLOW)
                 + f"Max length {args.max_length} exceeds channel limit "
-                  f"{channel_limit}. Adjusting to {channel_limit}.",
+                f"{channel_limit}. Adjusting to {channel_limit}.",
                 Color.RED,
                 no_color,
             ),
@@ -453,6 +453,7 @@ def cmd_create_config(args):
         )
     )
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
