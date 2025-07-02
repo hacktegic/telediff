@@ -114,8 +114,8 @@ def main():
     notify_parser.add_argument(
         "--max-length",
         type=int,
-        default=1600,
-        help="Max message length (default: 1600, 0=unlimited)",
+        default=0,
+        help="Max body length (default: 0=channel-specific limit)",
     )
     notify_parser.add_argument(
         "--no-path-in-body",
@@ -226,7 +226,28 @@ def cmd_notify(args):
     cache_dir = util.get_cache_path()
     cache_name = util.cache_file_name(args.channel, file_path)
     cache_file = os.path.join(cache_dir, cache_name)
+
+    # Determine channel limit safely
+    channel_limit = 1600
+    if getattr(apobj, "servers", None) and len(apobj.servers) > 0:
+        channel_limit = getattr(apobj.servers[0], "body_maxlen", 1600)
+
     max_length = args.max_length
+    if max_length < 1:
+        max_length = channel_limit
+    elif max_length > channel_limit:
+        print(
+            colorize(
+                emoji("fail", Color.YELLOW)
+                + f"Max length {args.max_length} exceeds channel limit "
+                  f"{channel_limit}. Adjusting to {channel_limit}.",
+                Color.RED,
+                no_color,
+            ),
+            file=sys.stderr,
+        )
+        max_length = channel_limit
+
     body_prepend = args.body_prepend or ""
     body_append = args.body_append or ""
     title_prepend = args.title_prepend or ""
@@ -432,3 +453,6 @@ def cmd_create_config(args):
         )
     )
     sys.exit(0)
+
+if __name__ == "__main__":
+    main()
