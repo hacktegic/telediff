@@ -235,6 +235,7 @@ def cmd_notify(args):
     # Determine channel limit safely
     channel_limit = 1600
     attachment_support = False
+    title_support = True
     if getattr(apobj, "servers", None) and len(apobj.servers) > 0:
         channel_limit = getattr(apobj.servers[0], "body_maxlen", 1600)
         attachment_support = getattr(apobj.servers[0], "attachment_support", False)

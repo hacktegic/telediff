@@ -318,6 +318,7 @@ foo = 'apprise://devnull/'
         apprise_obj.notify.return_value = True
         apprise_obj.servers = [MagicMock()]
         apprise_obj.servers[0].body_maxlen = 1000
+        apprise_obj.servers[0].title_maxlen = 1000
         code = run_cli(
             [
                 "notify",
