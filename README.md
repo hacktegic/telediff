@@ -20,8 +20,8 @@ uv tool install telediff
 
 ```sh
 docker run --rm \
-  -v "$HOME/.config/telediff:/root/.config/telediff" \
-  -v "$HOME/.cache/telediff:/root/.cache/telediff" \
+  -v "$HOME/.config/telediff:/app/.config/telediff" \
+  -v "$HOME/.cache/telediff:/app/.cache/telediff" \
   ghcr.io/hacktegic/telediff:latest telediff --help
 ```
 
