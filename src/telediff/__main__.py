@@ -127,6 +127,11 @@ def main():
         action="store_true",
         help="Disable colored and emoji output for this notification",
     )
+    notify_parser.add_argument(
+        "--attach",
+        action="store_true",
+        help="Attach the diff as a file if supported by the channel (text files only)",
+    )
     notify_parser.set_defaults(func=cmd_notify)
 
     # create-config command
@@ -229,10 +234,13 @@ def cmd_notify(args):
 
     # Determine channel limit safely
     channel_limit = 1600
+    attachment_support = False
     if getattr(apobj, "servers", None) and len(apobj.servers) > 0:
         channel_limit = getattr(apobj.servers[0], "body_maxlen", 1600)
-
+        attachment_support = getattr(apobj.servers[0], "attachment_support", False)
+        title_support = getattr(apobj.servers[0], "title_maxlen", 0) > 0
     max_length = args.max_length
+
     if max_length < 1:
         max_length = channel_limit
     elif max_length > channel_limit:
@@ -266,10 +274,24 @@ def cmd_notify(args):
     else:
         with open(file_path, "rb") as f:
             content_bytes = f.read()
+    # Helper to maybe attach diff
+    import tempfile
+
+    def maybe_attachment(diff_text):
+        if args.attach and attachment_support and is_text and diff_text:
+            tmp = tempfile.NamedTemporaryFile(
+                delete=False, suffix=".txt", mode="w", encoding="utf-8"
+            )
+            tmp.write(diff_text)
+            tmp.close()
+            return tmp.name
+        return None
+
     # If no cache, only send contents if text, otherwise send generic message
     if not os.path.exists(cache_file):
         if args.body is not None:
             msg = file_display + args.body if file_display else args.body
+            attachments = None
         elif is_text:
             # Show diff from empty string
             diff = difflib.unified_diff(
@@ -281,17 +303,26 @@ def cmd_notify(args):
             )
             diff_text = "\n".join(diff)
             msg = file_display + diff_text
+            attachments = maybe_attachment(diff_text)
         else:
             msg = file_display + (
                 emoji("binary", no_color) + "File created (binary or unknown type)."
                 if not no_color
                 else "File created (binary or unknown type)."
             )
+            attachments = None
         msg = body_prepend + msg + body_append
         notify_title = title_prepend + args.title + title_append
+        if not title_support:
+            max_length -= len(notify_title) * 2
         if max_length > 0:
             msg = msg[:max_length]
-        sent = apobj.notify(title=notify_title, body=msg)
+        notify_kwargs = dict(title=notify_title, body=msg)
+        if attachments:
+            notify_kwargs["attach"] = attachments
+        sent = apobj.notify(**notify_kwargs)
+        if not sent and attachments:
+            sent = apobj.notify(title=notify_title, body=msg)
         if sent:
             print(
                 colorize(
@@ -334,15 +365,22 @@ def cmd_notify(args):
             diff_text = "\n".join(diff)
             if args.body is not None:
                 msg = file_display + args.body if file_display else args.body
+                attachments = None
             else:
                 msg = file_display + (
                     emoji("diff", no_color) + diff_text if not no_color else diff_text
                 )
+                attachments = maybe_attachment(diff_text)
             msg = body_prepend + msg + body_append
             notify_title = title_prepend + args.title + title_append
             if max_length > 0:
                 msg = msg[:max_length]
-            sent = apobj.notify(title=notify_title, body=msg)
+            notify_kwargs = dict(title=notify_title, body=msg)
+            if attachments:
+                notify_kwargs["attach"] = attachments
+            sent = apobj.notify(**notify_kwargs)
+            if not sent and attachments:
+                sent = apobj.notify(title=notify_title, body=msg)
             if sent:
                 print(
                     colorize(
@@ -391,6 +429,8 @@ def cmd_notify(args):
                 )
             msg = body_prepend + msg + body_append
             notify_title = title_prepend + args.title + title_append
+            if not title_support:
+                max_length -= len(notify_title) * 2
             if max_length > 0:
                 msg = msg[:max_length]
             sent = apobj.notify(title=notify_title, body=msg)
