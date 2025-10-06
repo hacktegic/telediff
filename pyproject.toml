@@ -18,7 +18,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
-  "apprise==1.9.3",
+  "apprise==1.9.5",
   "platformdirs==4.3.8"
 ]
 
