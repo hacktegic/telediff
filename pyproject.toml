@@ -19,7 +19,7 @@ classifiers = [
 ]
 dependencies = [
   "apprise==1.9.6",
-  "platformdirs==4.3.8"
+  "platformdirs==4.4.0"
 ]
 
 [tool.hatch.version]
